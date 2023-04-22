@@ -1,7 +1,7 @@
 import cv2
 import os
 from moviepy.video.io.VideoFileClip import VideoFileClip
-from moviepy.editor import VideoFileClip, AudioFileClip, CompositeAudioClip
+from moviepy.editor import VideoFileClip, AudioFileClip
 
 dirname = os.path.dirname(__file__)
 print(dirname)
