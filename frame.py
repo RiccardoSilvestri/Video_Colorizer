@@ -6,9 +6,12 @@ from cv2 import dnn
 import sys
 from PIL import Image
 
+dirname = os.path.dirname(__file__)
+
 #prende l'audio dal video e lo converte in wav
-video_path = r'C:\Users\rsilv\Desktop\python\FrameGenerator\video.mp4'
-audio_path = r'C:\Users\rsilv\Desktop\python\FrameGenerator\audio.wav'
+video_path = os.path.join(dirname, 'video.mp4')
+audio_path = os.path.join(dirname, 'audio.wav')
+
 
 if os.path.exists(video_path):
     video_clip = VideoFileClip(video_path)
@@ -18,14 +21,12 @@ if os.path.exists(video_path):
     video_clip.close()
 
 #stabilisce i vari path
-video_path = r'C:\Users\rsilv\Desktop\python\FrameGenerator\video.mp4'
-save_dir = r'C:\Users\rsilv\Desktop\python\FrameGenerator\frames'
-save_dir_color = r'C:\Users\rsilv\Desktop\python\FrameGenerator\framec'     #cartella da sistemare
-
+save_dir = os.path.join(dirname, 'frames')
+save_dir_color = os.path.join(dirname, 'framec')     #cartella da sistemare
 #applica i tre modelli
-proto_file = r'C:\Users\rsilv\Desktop\python\FrameGenerator\colorization_deploy_v2.prototxt'
-model_file = r'C:\Users\rsilv\Desktop\python\FrameGenerator\colorization_release_v2.caffemodel'
-hull_pts = r'C:\Users\rsilv\Desktop\python\FrameGenerator\pts_in_hull.npy'
+proto_file = os.path.join(dirname, 'colorization_deploy_v2.prototxt')
+model_file = os.path.join(dirname, 'colorization_release_v2.caffemodel')
+hull_pts = os.path.join(dirname, 'pts_in_hull.npy')
 
 #converte il video in bianco e nero in frame
 if not os.path.exists(save_dir):
@@ -39,23 +40,25 @@ while success:
     cv2.imwrite(os.path.join(save_dir, f"frame{count}.jpg"), image)     
     success, image = vidcap.read()
     count += 1
+    print(count)
 
-    if cv2.waitKey(10) == 27:                     
+    if cv2.waitKey(10) == 27:                
         break
+
 vidcap.release()
 frame = cv2.imread(os.path.join(save_dir, "frame0.jpg"))
 height, width, _ = frame.shape
 
-count -2
-print (count)   #quantità file presenti nella cartella dei frame
+count -= 1
+print ("frames " + str(count))   #quantità file presenti nella cartella dei frame
 
 #converte i video in bianco e nero a colori 
 
-conta = 0
+numero = 0
 for i in range(count):
-    conta += 1
-    numero = conta
-    img_path = r'C:\Users\rsilv\Desktop\python\FrameGenerator\frames\frame{}.jpg'.format(numero)
+    numero += 1
+    img_path = os.path.join(dirname, 'frames/frame{}.jpg'.format(numero))
+    print(img_path)
     net = dnn.readNetFromCaffe(proto_file, model_file)
     kernel = np.load(hull_pts)
 
@@ -86,8 +89,7 @@ for i in range(count):
     img = cv2.resize(img, (width, height))
     colorized = cv2.resize(colorized, (width, height))
 
-    out_file = os.path.join(r'C:\Users\rsilv\Desktop\python\FrameGenerator\framec', f'{numero}.jpg')
+    out_file = os.path.join(r'C:/Users/lucai/Documents/GitHub/video_colorizer-/framec', f'{numero}.jpg')
     cv2.imwrite(out_file, colorized)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-
