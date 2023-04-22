@@ -7,7 +7,7 @@ path = 'C:/Users/rsilv/Desktop/python/FrameGenerator/framec/'
 files = os.listdir(path)
 num_files = len(files)  #numero file
 
-video = VideoFileClip(r'C:\Users\rsilv\Desktop\python\FrameGenerator\video.mp4')
+video = VideoFileClip(r'\video.mp4')
 duration_seconds = float(video.duration)    #durata file
 
 framerate = num_files / duration_seconds    #numero file diviso durata video originale
@@ -37,9 +37,9 @@ video_out.release()
 print('outputed video to ', out_path)
 
 #applica audio al video
-audio_path = r'C:\Users\rsilv\Desktop\python\FrameGenerator\audio.wav'
+audio_path = r'\audio.wav'
 
-video_path = r'C:\Users\rsilv\Desktop\python\FrameGenerator\convertito.mp4'
+video_path = r'\convertito.mp4'
 
 video = VideoFileClip(video_path)
 
@@ -48,5 +48,5 @@ audio = AudioFileClip(audio_path)
 video = video.set_audio(audio)
 
 
-video.write_videofile(r'C:\Users\rsilv\Desktop\python\FrameGenerator\convertito_con_audio.mp4', audio_codec='aac')
+video.write_videofile(r'\convertito_con_audio.mp4', audio_codec='aac')
 
