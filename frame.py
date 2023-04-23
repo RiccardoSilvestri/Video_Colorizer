@@ -48,12 +48,12 @@ def colorizeSingleFrame(height, width, colored_frames_output_folder, img_path, c
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-def colorizeFrames(black_and_white_frames_path, colored_frames_output_folder, frame_count):
+def colorizeFrames(black_and_white_frames_path, colored_frames_output_folder, frame_number):
     frame = cv2.imread(os.path.join(black_and_white_frames_path, "frame0.jpg"))
     height, width, _ = frame.shape
 
     current_frame = 0
-    for i in range(frame_count):
+    for i in range(frame_number):
             current_frame += 1
             img_path = os.path.join(black_and_white_frames_path, 'frame{}.jpg'.format(current_frame))
             colorizeSingleFrame(height, width, colored_frames_output_folder, img_path, current_frame)
@@ -70,18 +70,18 @@ def separateAudioTrack(video_path):
 def videoToBlackAndWhiteFrames(video_path, black_and_white_frames_folder):
     vidcap = cv2.VideoCapture(video_path)
     success, image = vidcap.read()
-    frame_count = 0
+    frame_number = 0
     while success:
-        cv2.imwrite(os.path.join(black_and_white_frames_folder, f"frame{frame_count}.jpg"), image)
+        cv2.imwrite(os.path.join(black_and_white_frames_folder, f"frame{frame_number}.jpg"), image)
         success, image = vidcap.read()
-        frame_count += 1
+        frame_number += 1
 
         if cv2.waitKey(10) == 27:
             break
        
-    frame_count -= 1
+    frame_number -= 1
     vidcap.release()
-    return frame_count
+    return frame_number
 
 def checkFoldersAndModels(black_and_white_frames_folder, colored_frames_output_folder, video_path):
     if (not os.path.exists(video_path)):
@@ -91,11 +91,14 @@ def checkFoldersAndModels(black_and_white_frames_folder, colored_frames_output_f
     if (not os.path.exists("tmp")):
         os.mkdir("tmp")
 
+    if (not os.path.exists('output')):
+        os.mkdir("output")
+
     if (not os.path.exists(black_and_white_frames_folder)):
         os.mkdir("tmp/black_and_white_frames")
 
     if (not os.path.exists(colored_frames_output_folder)):
-        os.mkdir("tmp/colored_frame")
+        os.mkdir("tmp/colored_frames")
 
     if (not os.path.exists('res/colorization_deploy_v2.prototxt')):
         print("res/colorization_deploy_v2.prototxt not found")
@@ -112,7 +115,7 @@ def checkFoldersAndModels(black_and_white_frames_folder, colored_frames_output_f
 def main():
     video_path = os.path.join(relative_path, 'video.mp4')
     black_and_white_frames_folder = os.path.join(relative_path, 'tmp/black_and_white_frames')
-    colored_frames_output_folder = os.path.join(relative_path, 'tmp/colored_frame')
+    colored_frames_output_folder = os.path.join(relative_path, 'tmp/colored_frames')
 
     if (checkFoldersAndModels(black_and_white_frames_folder, colored_frames_output_folder, video_path) == False):
         return 0
@@ -121,13 +124,13 @@ def main():
     separateAudioTrack(video_path)
 
     print("\nConverting video to frames")
-    frame_count = videoToBlackAndWhiteFrames(video_path, black_and_white_frames_folder)
+    frame_number = videoToBlackAndWhiteFrames(video_path, black_and_white_frames_folder)
     print("Done.")
 
-    print("\nFrame number " + str(frame_count))
+    print("\nFrame number " + str(frame_number))
 
     print("\nColorizing frames ")
-    colorizeFrames(black_and_white_frames_folder, colored_frames_output_folder, frame_count)
+    colorizeFrames(black_and_white_frames_folder, colored_frames_output_folder, frame_number)
     print("Done.")
 
 if __name__ == '__main__':
