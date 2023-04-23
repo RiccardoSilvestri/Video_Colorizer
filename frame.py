@@ -4,13 +4,22 @@ import cv2
 import os
 from cv2 import dnn
 from PIL import Image
+from multiprocessing import Pool
 
 relative_path = os.path.dirname(__file__)
 
-def colorizeSingleFrame(height, width, colored_frames_output_folder, img_path, current_frame):
+def colorizeSingleFrame(current_frame):
+    colored_frames_output_folder = os.path.join(relative_path, 'tmp/colored_frames') #to remove from here --> probably public ?
+    black_and_white_frames_folder = os.path.join(relative_path, 'tmp/black_and_white_frames') #same
+
     proto_file = os.path.join(relative_path, 'res/colorization_deploy_v2.prototxt')
     model_file = os.path.join(relative_path, 'res/colorization_release_v2.caffemodel')
     hull_pts = os.path.join(relative_path, 'res/pts_in_hull.npy')
+    
+    img_path= os.path.join(black_and_white_frames_folder, f"frame{current_frame}.jpg")
+    
+    frame = cv2.imread(img_path)
+    height, width, _ = frame.shape
 
     net = dnn.readNetFromCaffe(proto_file, model_file)
     kernel = np.load(hull_pts)
@@ -42,21 +51,21 @@ def colorizeSingleFrame(height, width, colored_frames_output_folder, img_path, c
     img = cv2.resize(img, (width, height))
     colorized = cv2.resize(colorized, (width, height))
 
-    out_file = os.path.join(colored_frames_output_folder, f'{current_frame}.jpg')
+    out_file = os.path.join(colored_frames_output_folder, f"frame{current_frame}.jpg")
     print(out_file)
     cv2.imwrite(out_file, colorized)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+    return out_file
 
-def colorizeFrames(black_and_white_frames_path, colored_frames_output_folder, frame_number):
-    frame = cv2.imread(os.path.join(black_and_white_frames_path, "frame0.jpg"))
-    height, width, _ = frame.shape
-
-    current_frame = 0
-    for i in range(frame_number):
-            current_frame += 1
-            img_path = os.path.join(black_and_white_frames_path, 'frame{}.jpg'.format(current_frame))
-            colorizeSingleFrame(height, width, colored_frames_output_folder, img_path, current_frame)
+def colorizeFrames(frame_number):
+    print(frame_number)
+    with Pool() as pool:
+        results = pool.imap_unordered(colorizeSingleFrame, range(frame_number))
+        for out_file in results:
+            print(out_file)
+                
+                # colorizeSingleFrame(height, width, colored_frames_output_folder, img_path, current_frame)
 
 
 def separateAudioTrack(video_path):
@@ -78,8 +87,7 @@ def videoToBlackAndWhiteFrames(video_path, black_and_white_frames_folder):
 
         if cv2.waitKey(10) == 27:
             break
-       
-    frame_number -= 1
+        
     vidcap.release()
     return frame_number
 
@@ -130,7 +138,7 @@ def main():
     print("\nFrame number " + str(frame_number))
 
     print("\nColorizing frames ")
-    colorizeFrames(black_and_white_frames_folder, colored_frames_output_folder, frame_number)
+    colorizeFrames(frame_number)
     print("Done.")
 
 if __name__ == '__main__':
