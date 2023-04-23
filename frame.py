@@ -4,6 +4,7 @@ import cv2
 import os
 from cv2 import dnn
 from PIL import Image
+import time
 from multiprocessing import Pool
 
 relative_path = os.path.dirname(__file__)
@@ -138,8 +139,11 @@ def main():
     print("\nFrame number " + str(frame_number))
 
     print("\nColorizing frames ")
+    t0 = time.time()
     colorizeFrames(frame_number)
+    t1 = time.time()
     print("Done.")
+    print(t1-t0)
 
 if __name__ == '__main__':
     main()
