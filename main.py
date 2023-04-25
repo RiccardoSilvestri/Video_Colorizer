@@ -6,7 +6,7 @@ from cv2 import dnn
 from PIL import Image
 import time
 from multiprocessing import Pool
-from convertito import coloredFramesToVideo
+from convertito import frameToVideo
 
 relative_path = os.path.dirname(__file__)
 
@@ -143,7 +143,7 @@ def main():
     t1 = time.time()
     print("Done.")
     print(t1-t0)
-    coloredFramesToVideo()
+    frameToVideo()
 
 if __name__ == '__main__':
     main()
