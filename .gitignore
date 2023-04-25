@@ -1,3 +1,4 @@
 /tmp
 *.mp4
 colorization_release_v2.caffemodel
+__pycache__/convertito.cpython-311.pyc
