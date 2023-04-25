@@ -143,7 +143,9 @@ def main():
     t1 = time.time()
     print("Done.")
     print(t1-t0)
+    print("Converting frames to video")
     frameToVideo()
+    print("Done.")
 
 if __name__ == '__main__':
     main()
