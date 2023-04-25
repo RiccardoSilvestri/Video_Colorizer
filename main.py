@@ -63,11 +63,9 @@ def colorizeSingleFrame(current_frame):
 def colorizeFrames(frame_number):
     print(frame_number)
     with Pool() as pool:
-        results = pool.imap_unordered(colorizeSingleFrame, range(frame_number))
+        results = pool.imap(colorizeSingleFrame, range(frame_number))
         for out_file in results:
             print(out_file)
-                
-                # colorizeSingleFrame(height, width, colored_frames_output_folder, img_path, current_frame)
 
 
 def separateAudioTrack(video_path):

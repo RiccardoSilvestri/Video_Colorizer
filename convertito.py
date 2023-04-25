@@ -17,28 +17,24 @@ def coloredFramesToVideo():
     frame_number = len(os.listdir(colored_frames_output_folder))
 
     video = VideoFileClip('video.mp4')
-    duration_seconds = float(video.duration)    #durata file
-
-    #framerate = frame_number / duration_seconds    #numero file diviso durata video originale
+    duration_seconds = float(video.duration)
     framerate = video.fps
-    print(video.fps)
-    #print(framerate)
+    print(framerate)
 
     #converte frame in un video
     cv2_fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    frame = cv2.imread(colored_frames_output_folder + '1.jpg')  
+    frame = cv2.imread(colored_frames_output_folder + 'frame0.jpg')  
     size = list(frame.shape)
     del size[2]
     size.reverse()
 
     video_out = cv2.VideoWriter(out_video_full_path, cv2_fourcc, framerate, tuple(size))
-    for i in range(1, frame_number+1): 
-        filename = colored_frames_output_folder + str(i) + '.jpg'
+    for i in range(frame_number): 
+        filename = colored_frames_output_folder + 'frame' +str(i) + '.jpg'
         if os.path.exists(filename):  
             frame = cv2.imread(filename)
             video_out.write(frame)
-            print('frame %d' % i,' of', frame_number, end='\r')
-            #print('frame ', i, ' of', frame_number, '')
+            print('frame ', i, ' of', frame_number, '')
         else:
             print(filename, ' not found')
 
@@ -46,11 +42,11 @@ def coloredFramesToVideo():
 
     #applica audio al video
 
-    video = VideoFileClip(out_video_full_path)
+    print(out_video_full_path)
+    # video = VideoFileClip(out_video_full_path)
 
     audio = AudioFileClip(audio_path)
 
     video = video.set_audio(audio)
-
 
     video.write_videofile(out_video_full_path, audio_codec='aac')
